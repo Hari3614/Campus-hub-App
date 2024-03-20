@@ -89,3 +89,41 @@ class AttendanceModel extends HiveObject {
     required this.absentStudents,
   });
 }
+
+@HiveType(typeId: 4)
+class MarkModel extends HiveObject {
+  @HiveField(0)
+  String? id;
+
+  @HiveField(1)
+  String? subject;
+
+  @HiveField(2)
+  String? studentName;
+
+  @HiveField(3)
+  String? exam;
+
+  @HiveField(4)
+  String? examType;
+
+  @HiveField(5)
+  int? totalMarks;
+
+  @HiveField(6)
+  int? obtainedMarks;
+
+  @HiveField(7)
+  String? grade;
+
+  MarkModel({
+    required this.id,
+    required this.subject,
+    required this.studentName,
+    required this.exam,
+    required this.examType,
+    required this.totalMarks,
+    required this.obtainedMarks,
+    required this.grade,
+  });
+}

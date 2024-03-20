@@ -12,6 +12,7 @@ void main() async {
   Hive.registerAdapter(StudentModelAdapter());
   Hive.registerAdapter(LessonModelAdapter());
   Hive.registerAdapter(AttendanceModelAdapter());
+  Hive.registerAdapter(MarkModelAdapter());
 
   runApp(const MainApp());
 }

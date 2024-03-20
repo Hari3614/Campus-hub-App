@@ -80,3 +80,15 @@ Future<void> deleteAttendance(String key) async {
   attendanceBox.delete(key);
   print('Record with key $key deleted from Hive database');
 }
+
+//   <<...........Mark Adding Database...........>>
+
+ValueNotifier<List<MarkModel>> MarkListNotifier = ValueNotifier([]);
+
+Future<void> addMark(MarkModel value) async {
+  final markBox = await Hive.openBox<MarkModel>('mark');
+  String key = DateTime.now().millisecondsSinceEpoch.toString();
+  value.id = key;
+  markBox.put(key, value);
+  print(value);
+}

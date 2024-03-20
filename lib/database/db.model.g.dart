@@ -118,22 +118,24 @@ class AttendanceModelAdapter extends TypeAdapter<AttendanceModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return AttendanceModel(
-      date: fields[0] as DateTime,
-      presentStudents: (fields[1] as List).cast<StudentModel>(),
-      absentStudents: (fields[2] as List).cast<StudentModel>(),
-      id: '',
+      id: fields[0] as String?,
+      date: fields[1] as DateTime,
+      presentStudents: (fields[2] as List).cast<StudentModel>(),
+      absentStudents: (fields[3] as List).cast<StudentModel>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, AttendanceModel obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
-      ..write(obj.date)
+      ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.presentStudents)
+      ..write(obj.date)
       ..writeByte(2)
+      ..write(obj.presentStudents)
+      ..writeByte(3)
       ..write(obj.absentStudents);
   }
 
@@ -144,6 +146,61 @@ class AttendanceModelAdapter extends TypeAdapter<AttendanceModel> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is AttendanceModelAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class MarkModelAdapter extends TypeAdapter<MarkModel> {
+  @override
+  final int typeId = 4;
+
+  @override
+  MarkModel read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return MarkModel(
+      id: fields[0] as String?,
+      subject: fields[1] as String?,
+      studentName: fields[2] as String?,
+      exam: fields[3] as String?,
+      examType: fields[4] as String?,
+      totalMarks: fields[5] as int?,
+      obtainedMarks: fields[6] as int?,
+      grade: fields[7] as String?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, MarkModel obj) {
+    writer
+      ..writeByte(8)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.subject)
+      ..writeByte(2)
+      ..write(obj.studentName)
+      ..writeByte(3)
+      ..write(obj.exam)
+      ..writeByte(4)
+      ..write(obj.examType)
+      ..writeByte(5)
+      ..write(obj.totalMarks)
+      ..writeByte(6)
+      ..write(obj.obtainedMarks)
+      ..writeByte(7)
+      ..write(obj.grade);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MarkModelAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

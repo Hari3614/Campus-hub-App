@@ -7,26 +7,37 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings'),
+        title: const Text('Settings'),
+        centerTitle: true,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'This is the Settings Page',
-              style: TextStyle(fontSize: 20),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Implement your settings functionality here
-                // For example, you can show a dialog or navigate to another page
-              },
-              child: Text('Change Settings'),
-            ),
-          ],
-        ),
+      body: ListView(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+        children: [
+          ListTile(
+            leading: const Icon(Icons.color_lens),
+            title: const Text('Appearance Settings'),
+            onTap: () {
+              // Add functionality for appearance settings
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.info),
+            title: const Text('About'),
+            onTap: () {
+              // Add functionality for about settings
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.share),
+            title: const Text('Share App'),
+            onTap: () {
+              // Add functionality for sharing the app
+            },
+          ),
+          const Divider(),
+        ],
       ),
     );
   }

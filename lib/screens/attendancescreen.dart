@@ -44,7 +44,7 @@ class _AttendanceAddingPageState extends State<AttendanceAddingPage> {
         title: const Text(
           'Attendance Adding',
           style: TextStyle(
-            fontSize: 24,
+            fontSize: 22,
             fontWeight: FontWeight.bold,
             color: Color.fromARGB(255, 75, 75, 75),
           ),
