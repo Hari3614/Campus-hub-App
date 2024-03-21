@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:project_1/database/db.model.dart';
+import 'package:project_1/database/student_db.dart';
+import 'package:project_1/screens/mark_screen.dart';
 
 class AddMarkScreen extends StatefulWidget {
   const AddMarkScreen({Key? key}) : super(key: key);
@@ -31,8 +33,9 @@ class _AddMarkScreenState extends State<AddMarkScreen> {
   List<String> gradeOptions = ['A', 'B', 'C', 'D', 'E'];
   String selectedGrade = 'A'; // Default selected grade
 
-  List<String> studentNames =
-      []; // List to store student names fetched from Hive
+  List<String> studentNames = []; // List to store student names
+
+  String? selectedStudentName; // Default selected student name
 
   @override
   void initState() {
@@ -45,6 +48,10 @@ class _AddMarkScreenState extends State<AddMarkScreen> {
     List<StudentModel> students = studentBox.values.toList();
     setState(() {
       studentNames = students.map((student) => student.firstName).toList();
+      if (studentNames.isNotEmpty) {
+        selectedStudentName =
+            studentNames[0]; // Set default selected student name
+      }
     });
   }
 
@@ -69,23 +76,35 @@ class _AddMarkScreenState extends State<AddMarkScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            DropdownButtonFormField<String>(
-              value: studentNames.isNotEmpty ? studentNames[0] : null,
-              onChanged: (value) {
-                // Handle selecting student name
-              },
+            TextFormField(
+              controller: subjectController,
               decoration: InputDecoration(
-                labelText: 'Student Name',
+                labelText: 'Subject',
                 border: OutlineInputBorder(),
               ),
-              items: studentNames
-                  .map((studentName) => DropdownMenuItem<String>(
-                        value: studentName,
-                        child: Text(studentName),
-                      ))
-                  .toList(),
             ),
             SizedBox(height: 16),
+            if (studentNames.isNotEmpty) ...[
+              DropdownButtonFormField<String>(
+                value: selectedStudentName,
+                onChanged: (value) {
+                  setState(() {
+                    selectedStudentName = value!;
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: 'Student Name',
+                  border: OutlineInputBorder(),
+                ),
+                items: studentNames
+                    .map((studentName) => DropdownMenuItem<String>(
+                          value: studentName,
+                          child: Text(studentName),
+                        ))
+                    .toList(),
+              ),
+              SizedBox(height: 16),
+            ],
             DropdownButtonFormField<String>(
               value: selectedExam,
               onChanged: (value) {
@@ -93,7 +112,7 @@ class _AddMarkScreenState extends State<AddMarkScreen> {
                   selectedExam = value!;
                 });
               },
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Exam Name',
                 border: OutlineInputBorder(),
               ),
@@ -104,7 +123,7 @@ class _AddMarkScreenState extends State<AddMarkScreen> {
                       ))
                   .toList(),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             DropdownButtonFormField<String>(
               value: selectedExamType,
               onChanged: (value) {
@@ -162,36 +181,34 @@ class _AddMarkScreenState extends State<AddMarkScreen> {
             ),
             SizedBox(height: 40),
             ElevatedButton(
-              onPressed: () {
-                // Handle saving the marks here
-                String subject = subjectController.text;
-                String studentName =
-                    studentNames.isNotEmpty ? studentNames[0] : '';
-                String exam = selectedExam;
-                String examType = selectedExamType;
-                int totalMarks = int.tryParse(totalMarkController.text) ?? 0;
-                int obtainedMarks =
-                    int.tryParse(obtainedMarkController.text) ?? 0;
-                String grade = selectedGrade;
+              onPressed: () async {
+                if (selectedStudentName != null) {
+                  String subject = subjectController.text;
+                  String studentName = selectedStudentName!;
+                  String exam = selectedExam;
+                  String examType = selectedExamType;
+                  int totalMarks = int.tryParse(totalMarkController.text) ?? 0;
+                  int obtainedMarks =
+                      int.tryParse(obtainedMarkController.text) ?? 0;
+                  String grade = selectedGrade;
 
-                // Add your logic to save the marks to a database or perform other actions
-                // For demonstration, we print the entered data
-                print('Subject: $subject');
-                print('Student Name: $studentName');
-                print('Exam: $exam');
-                print('Exam Type: $examType');
-                print('Total Marks: $totalMarks');
-                print('Obtained Marks: $obtainedMarks');
-                print('Grade: $grade');
+                  MarkModel mark = MarkModel(
+                    id: null,
+                    subject: subject,
+                    studentName: studentName,
+                    exam: exam,
+                    examType: examType,
+                    totalMarks: totalMarks,
+                    obtainedMarks: obtainedMarks,
+                    grade: grade,
+                  );
 
-                // Clear the form fields and selected values
-                subjectController.clear();
-                totalMarkController.clear();
-                obtainedMarkController.clear();
-                selectedExam = examOptions[0]; // Reset selected exam
-                selectedExamType =
-                    examTypeOptions[0]; // Reset selected exam type
-                selectedGrade = gradeOptions[0]; // Reset selected grade
+                  addMark(mark);
+                }
+                await Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => MarkScreen()),
+                );
               },
               child: Text('Save Marks'),
               style: ElevatedButton.styleFrom(

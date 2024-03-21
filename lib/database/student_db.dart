@@ -92,3 +92,8 @@ Future<void> addMark(MarkModel value) async {
   markBox.put(key, value);
   print(value);
 }
+
+Future<List<MarkModel>> getMark() async {
+  final markBox = await Hive.openBox<MarkModel>('mark');
+  return markBox.values.toList();
+}
