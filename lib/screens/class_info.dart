@@ -206,7 +206,7 @@ class _ClassInfoState extends State<ClassInfo> {
       extendBody: true,
       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       bottomNavigationBar: CurvedNavigationBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Color.fromRGBO(255, 0, 0, 0),
         color: const Color.fromARGB(255, 1, 255, 213),
         height: 60,
         animationCurve: Curves.fastOutSlowIn,

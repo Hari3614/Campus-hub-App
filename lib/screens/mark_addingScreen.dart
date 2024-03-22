@@ -60,7 +60,7 @@ class _AddMarkScreenState extends State<AddMarkScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 1, 255, 213),
-        title: Text(
+        title: const Text(
           'Add Marks',
           style: TextStyle(
             fontSize: 22,
@@ -78,12 +78,12 @@ class _AddMarkScreenState extends State<AddMarkScreen> {
           children: [
             TextFormField(
               controller: subjectController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Subject',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             if (studentNames.isNotEmpty) ...[
               DropdownButtonFormField<String>(
                 value: selectedStudentName,
@@ -92,7 +92,7 @@ class _AddMarkScreenState extends State<AddMarkScreen> {
                     selectedStudentName = value!;
                   });
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Student Name',
                   border: OutlineInputBorder(),
                 ),
@@ -103,7 +103,7 @@ class _AddMarkScreenState extends State<AddMarkScreen> {
                         ))
                     .toList(),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
             ],
             DropdownButtonFormField<String>(
               value: selectedExam,
@@ -131,7 +131,7 @@ class _AddMarkScreenState extends State<AddMarkScreen> {
                   selectedExamType = value!;
                 });
               },
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Exam Type',
                 border: OutlineInputBorder(),
               ),
@@ -142,25 +142,25 @@ class _AddMarkScreenState extends State<AddMarkScreen> {
                       ))
                   .toList(),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextFormField(
               controller: totalMarkController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Total Marks',
                 border: OutlineInputBorder(),
               ),
               keyboardType: TextInputType.number,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextFormField(
               controller: obtainedMarkController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Obtained Marks',
                 border: OutlineInputBorder(),
               ),
               keyboardType: TextInputType.number,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             DropdownButtonFormField<String>(
               value: selectedGrade,
               onChanged: (value) {
@@ -168,7 +168,7 @@ class _AddMarkScreenState extends State<AddMarkScreen> {
                   selectedGrade = value!;
                 });
               },
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Grade',
                 border: OutlineInputBorder(),
               ),
@@ -212,9 +212,9 @@ class _AddMarkScreenState extends State<AddMarkScreen> {
               },
               child: Text('Save Marks'),
               style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: Color.fromARGB(255, 197, 255, 245),
-                textStyle: TextStyle(fontSize: 18),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                backgroundColor: const Color.fromARGB(255, 197, 255, 245),
+                textStyle: const TextStyle(fontSize: 18),
               ),
             ),
           ],

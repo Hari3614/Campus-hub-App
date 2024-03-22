@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
+
+  @override
+  _SettingsPageState createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  bool isDarkModeEnabled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +24,7 @@ class SettingsPage extends StatelessWidget {
             leading: const Icon(Icons.color_lens),
             title: const Text('Appearance Settings'),
             onTap: () {
-              // Add functionality for appearance settings
+              _showAppearanceSettingsDialog(context);
             },
           ),
           const Divider(),
@@ -39,6 +46,58 @@ class SettingsPage extends StatelessWidget {
           const Divider(),
         ],
       ),
+    );
+  }
+
+  void _showAppearanceSettingsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Appearance Settings'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Light Mode'),
+                  Switch(
+                    value: !isDarkModeEnabled,
+                    onChanged: (value) {
+                      setState(() {
+                        isDarkModeEnabled = !value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Dark Mode'),
+                  Switch(
+                    value: isDarkModeEnabled,
+                    onChanged: (value) {
+                      setState(() {
+                        isDarkModeEnabled = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
