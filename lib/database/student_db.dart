@@ -97,3 +97,9 @@ Future<List<MarkModel>> getMark() async {
   final markBox = await Hive.openBox<MarkModel>('mark');
   return markBox.values.toList();
 }
+
+Future<void> deleteMark(String key) async {
+  // ignore: non_constant_identifier_names
+  final Markbox = await Hive.openBox<StudentModel>('Mark');
+  Markbox.delete(key);
+}

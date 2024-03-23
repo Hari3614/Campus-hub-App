@@ -204,11 +204,22 @@ class _AddMarkScreenState extends State<AddMarkScreen> {
                   );
 
                   addMark(mark);
+
+                  // Show snackbar to indicate successful addition
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Marks added successfully',
+                        style: TextStyle(color: Colors.green),
+                      ),
+                    ),
+                  );
+
+                  await Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => MarkScreen()),
+                  );
                 }
-                await Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => MarkScreen()),
-                );
               },
               child: Text('Save Marks'),
               style: ElevatedButton.styleFrom(

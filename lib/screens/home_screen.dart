@@ -6,6 +6,7 @@ import 'package:project_1/screens/login_screen.dart';
 import 'package:project_1/screens/classedit_screen.dart';
 import 'package:project_1/screens/class_info.dart';
 import 'package:project_1/screens/settings_screen.dart';
+import 'package:project_1/screens/graphscreen.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -202,6 +203,33 @@ class _HomeState extends State<Home> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => AboutPage()),
+                  );
+                },
+              ),
+              ListTile(
+                title: const Row(
+                  children: [
+                    Icon(
+                      Icons.show_chart,
+                      size: 25,
+                      color: Color.fromARGB(255, 56, 56, 56),
+                    ),
+                    SizedBox(width: 10),
+                    Text(
+                      'Graph',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Color.fromARGB(255, 69, 69, 69),
+                      ),
+                    ),
+                  ],
+                ),
+                onTap: () {
+                  Navigator.pop(context); // Close the drawer
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => GhraphPage()),
                   );
                 },
               ),
