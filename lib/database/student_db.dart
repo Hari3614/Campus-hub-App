@@ -66,8 +66,9 @@ Future<void> addAttendance(AttendanceModel value) async {
   final attendanceBox = await Hive.openBox<AttendanceModel>('attendance');
   String key = DateTime.now().millisecondsSinceEpoch.toString();
   value.id = key;
-  attendanceBox.put(key, value);
+  await attendanceBox.put(key, value);
   print(value);
+  await attendanceBox.close(); // Close the box after usage
 }
 
 Future<List<AttendanceModel>> getAttendances() async {

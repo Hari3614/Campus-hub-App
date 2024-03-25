@@ -74,13 +74,13 @@ class AttendanceModel extends HiveObject {
   String? id;
 
   @HiveField(1)
-  DateTime date;
+  DateTime date; // Change type to DateTime
 
   @HiveField(2)
-  List<StudentModel> presentStudents;
+  String presentStudents;
 
   @HiveField(3)
-  List<StudentModel> absentStudents;
+  String absentStudents;
 
   AttendanceModel({
     required this.id,

@@ -120,8 +120,8 @@ class AttendanceModelAdapter extends TypeAdapter<AttendanceModel> {
     return AttendanceModel(
       id: fields[0] as String?,
       date: fields[1] as DateTime,
-      presentStudents: (fields[2] as List).cast<StudentModel>(),
-      absentStudents: (fields[3] as List).cast<StudentModel>(),
+      presentStudents: fields[2] as String,
+      absentStudents: fields[3] as String,
     );
   }
 
