@@ -7,13 +7,14 @@ class AttendanceAddingPage extends StatefulWidget {
   const AttendanceAddingPage({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _AttendanceAddingPageState createState() => _AttendanceAddingPageState();
 }
 
 class _AttendanceAddingPageState extends State<AttendanceAddingPage> {
   List<StudentModel> _allStudents = [];
   Map<String, bool> _studentSelections = {};
-  ValueNotifier<List<StudentModel>> _selectedStudentsNotifier =
+  final ValueNotifier<List<StudentModel>> _selectedStudentsNotifier =
       ValueNotifier<List<StudentModel>>([]);
 
   @override
@@ -50,9 +51,8 @@ class _AttendanceAddingPageState extends State<AttendanceAddingPage> {
         .where((student) => !_selectedStudentsNotifier.value.contains(student))
         .toList();
 
-    // Create an AttendanceModel object
     AttendanceModel attendance = AttendanceModel(
-      id: null, // Let Hive generate the ID
+      id: null,
       date: currentDate,
       presentStudents: presentStudents
           .map((student) => '${student.firstName} ${student.lastName}')
@@ -62,18 +62,15 @@ class _AttendanceAddingPageState extends State<AttendanceAddingPage> {
           .join(', '),
     );
 
-    // Save the attendance to the database
     await addAttendance(attendance);
 
-    // Show a message or navigate to another screen if needed
+    // ignore: use_build_context_synchronously
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+      const SnackBar(
         content: Text('Attendance saved successfully!'),
       ),
     );
 
-    // Optionally, reset selections or perform other actions
-    // Reset selected students
     _selectedStudentsNotifier.value = [];
   }
 
@@ -102,11 +99,10 @@ class _AttendanceAddingPageState extends State<AttendanceAddingPage> {
         actions: [
           IconButton(
             onPressed: () {
-              // Navigate to the AttendanceHistoryPage when the history icon is clicked
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => AttendanceHistoryPage()),
+                    builder: (context) => const AttendanceHistoryPage()),
               );
             },
             icon: const Icon(Icons.history),

@@ -21,6 +21,7 @@ class AttendanceHistoryPage extends StatefulWidget {
   const AttendanceHistoryPage({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _AttendanceHistoryPageState createState() => _AttendanceHistoryPageState();
 }
 
@@ -29,7 +30,7 @@ class _AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
-  Map<DateTime, List<AttendanceModel>> _events = {};
+  final Map<DateTime, List<AttendanceModel>> _events = {};
 
   @override
   void initState() {
@@ -60,7 +61,8 @@ class _AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Attendance History'),
+        backgroundColor: const Color.fromARGB(255, 1, 255, 213),
+        title: const Text('Attendance History'),
         centerTitle: true,
       ),
       body: Column(
@@ -105,7 +107,7 @@ class _AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
                       subtitle: Text(
                           'Present: ${attendance.presentStudents}, Absent: ${attendance.absentStudents}'),
                       trailing: IconButton(
-                        icon: Icon(Icons.delete),
+                        icon: const Icon(Icons.delete),
                         onPressed: () {
                           _deleteAttendance(attendance.id!);
                         },
@@ -139,17 +141,18 @@ class _AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
 class AttendanceDetailsPage extends StatelessWidget {
   final DateTime selectedDay;
 
-  const AttendanceDetailsPage(this.selectedDay);
+  const AttendanceDetailsPage(this.selectedDay, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 1, 255, 213),
         centerTitle: true,
-        title: Text('Attendance Details'),
+        title: const Text('Attendance Details'),
         actions: [
           IconButton(
-            icon: Icon(Icons.edit),
+            icon: const Icon(Icons.edit),
             onPressed: () {
               Navigator.push(
                 context,
@@ -160,7 +163,7 @@ class AttendanceDetailsPage extends StatelessWidget {
             },
           ),
           IconButton(
-            icon: Icon(Icons.delete),
+            icon: const Icon(Icons.delete),
             onPressed: () {
               _deleteAttendanceForDate(selectedDay);
             },
@@ -171,17 +174,17 @@ class AttendanceDetailsPage extends StatelessWidget {
         future: _fetchAttendanceForDate(selectedDay),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           } else if (snapshot.hasError) {
-            return Center(
+            return const Center(
               child: Text('Error fetching attendance details'),
             );
           } else {
             List<AttendanceModel> attendanceList = snapshot.data!;
             if (attendanceList.isEmpty) {
-              return Center(
+              return const Center(
                 child: Text(
                   'Attendance not added for this day',
                   style: TextStyle(
@@ -208,13 +211,13 @@ class AttendanceDetailsPage extends StatelessWidget {
                   _buildCard(
                     'Present Students',
                     presentStudents,
-                    const Color.fromARGB(255, 28, 255, 194),
+                    const Color.fromARGB(255, 46, 46, 46),
                   ),
                   const SizedBox(height: 20),
                   _buildCard(
                     'Absent Students',
                     absentStudents,
-                    const Color.fromARGB(255, 255, 95, 37),
+                    const Color.fromARGB(255, 46, 46, 46),
                   ),
                 ],
               ),
@@ -228,13 +231,24 @@ class AttendanceDetailsPage extends StatelessWidget {
   Widget _buildCard(String title, List<String> students, Color color) {
     return Center(
       child: Container(
-        constraints: BoxConstraints(
+        constraints: const BoxConstraints(
           minHeight: 200, // Set a minimum height
           minWidth: 200,
         ),
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5), // Shadow color
+              spreadRadius: 2, // Spread radius
+              blurRadius: 5, // Blur radius
+              offset: const Offset(
+                  0, 3), // Offset to control the position of the shadow
+            ),
+          ],
+        ),
         child: Card(
-          margin: EdgeInsets.symmetric(vertical: 8),
-          elevation: 4,
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          elevation: 0, // Set Card elevation to 0 to avoid duplicate shadows
           color: color,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(
@@ -242,21 +256,21 @@ class AttendanceDetailsPage extends StatelessWidget {
             ), // Adjust the border radius as needed
           ),
           child: Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Center(
                   child: Text(
                     title,
-                    style: TextStyle(
-                      fontSize: 18,
+                    style: const TextStyle(
+                      fontSize: 19,
                       fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(255, 255, 255, 255),
+                      color: Color.fromARGB(255, 174, 255, 82),
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: students
@@ -264,9 +278,9 @@ class AttendanceDetailsPage extends StatelessWidget {
                         (student) => Center(
                           child: Text(
                             student,
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 0, 0, 0),
-                              fontSize: 19,
+                            style: const TextStyle(
+                              color: Color.fromARGB(255, 255, 255, 255),
+                              fontSize: 17,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

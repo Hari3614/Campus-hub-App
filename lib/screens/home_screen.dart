@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
-import 'package:project_1/screens/aboutsceen.dart';
 import 'package:project_1/screens/login_screen.dart';
 import 'package:project_1/screens/classedit_screen.dart';
 import 'package:project_1/screens/class_info.dart';
@@ -176,33 +175,6 @@ class _HomeState extends State<Home> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => SettingsPage()),
-                  );
-                },
-              ),
-              ListTile(
-                title: const Row(
-                  children: [
-                    Icon(
-                      Icons.info,
-                      size: 25,
-                      color: Color.fromARGB(255, 56, 56, 56),
-                    ),
-                    SizedBox(width: 10),
-                    Text(
-                      'About',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Color.fromARGB(255, 69, 69, 69),
-                      ),
-                    ),
-                  ],
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => AboutPage()),
                   );
                 },
               ),
