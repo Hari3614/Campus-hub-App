@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:project_1/database/student_db.dart';
 import 'package:project_1/screens/editStudent_screen.dart';
 import 'package:project_1/screens/mark_screen.dart';
@@ -244,10 +245,11 @@ class _ClassInfoState extends State<ClassInfo> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 1, 255, 213),
-        title: const Text(
+        title: Text(
           'Class Info',
-          style: TextStyle(
-            fontSize: 24,
+          style: GoogleFonts.montserrat(
+            // Use Google Fonts for Cinzel font
+            fontSize: 22,
             fontWeight: FontWeight.bold,
             color: Color.fromARGB(255, 75, 75, 75),
           ),

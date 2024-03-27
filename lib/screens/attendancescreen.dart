@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:project_1/database/db.model.dart';
 import 'package:project_1/database/student_db.dart';
 import 'package:project_1/screens/atattendance_history.dart';
@@ -87,12 +88,12 @@ class _AttendanceAddingPageState extends State<AttendanceAddingPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 1, 255, 213),
-        title: const Text(
+        title: Text(
           'Attendance Adding',
-          style: TextStyle(
+          style: GoogleFonts.montserrat(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Color.fromARGB(255, 75, 75, 75),
+            color: const Color.fromARGB(255, 75, 75, 75),
           ),
         ),
         centerTitle: true,

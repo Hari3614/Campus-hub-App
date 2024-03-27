@@ -6,6 +6,7 @@ import 'package:project_1/screens/classedit_screen.dart';
 import 'package:project_1/screens/class_info.dart';
 import 'package:project_1/screens/settings_screen.dart';
 import 'package:project_1/screens/graphscreen.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -55,12 +56,14 @@ class _HomeState extends State<Home> {
         key: _scaffoldKey,
         appBar: AppBar(
           backgroundColor: const Color.fromARGB(255, 12, 206, 197),
-          title: const Text(
+          title: Text(
             "Classes",
-            style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 75, 75, 75)),
+            style: GoogleFonts.montserrat(
+              // Use Google Fonts for Cinzel font
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Color.fromARGB(255, 75, 75, 75),
+            ),
           ),
           elevation: 0,
           centerTitle: true,
@@ -73,18 +76,6 @@ class _HomeState extends State<Home> {
               _scaffoldKey.currentState?.openDrawer();
             },
           ),
-          actions: [
-            IconButton(
-              icon: const Icon(
-                Icons.sort_rounded,
-                size: 30,
-              ),
-              onPressed: () {
-                // ignore: avoid_print
-                print('Sort icon pressed');
-              },
-            ),
-          ],
         ),
         drawer: Drawer(
           child: ListView(
