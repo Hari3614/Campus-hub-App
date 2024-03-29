@@ -101,20 +101,20 @@ class _EditAttendancePageState extends State<EditAttendancePage> {
             Center(
               child: Text(
                 'Attendance on ${widget.selectedDay.day}/${widget.selectedDay.month}/${widget.selectedDay.year}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-            SizedBox(height: 20),
-            Text(
+            const SizedBox(height: 20),
+            const Text(
               'Present Students:',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             Expanded(
               child: ListView.builder(
                 itemCount: presentStudents.length,
@@ -126,14 +126,14 @@ class _EditAttendancePageState extends State<EditAttendancePage> {
                 },
               ),
             ),
-            SizedBox(height: 20),
-            Text(
+            const SizedBox(height: 20),
+            const Text(
               'Absent Students:',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             Expanded(
               child: ListView.builder(
                 itemCount: absentStudents.length,
@@ -195,6 +195,7 @@ class _EditAttendancePageState extends State<EditAttendancePage> {
 
           await attendanceBox.put(attendance.key, attendance);
 
+          // ignore: use_build_context_synchronously
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Attendance updated successfully')),
           );

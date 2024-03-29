@@ -40,37 +40,37 @@ class _EditMarkScreenState extends State<EditMarkScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Mark'),
+        title: const Text('Edit Mark'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextField(
               controller: obtainedMarksController,
-              decoration: InputDecoration(labelText: 'Obtained Marks'),
+              decoration: const InputDecoration(labelText: 'Obtained Marks'),
               keyboardType: TextInputType.number,
             ),
             TextField(
               controller: totalMarksController,
-              decoration: InputDecoration(labelText: 'Total Marks'),
+              decoration: const InputDecoration(labelText: 'Total Marks'),
               keyboardType: TextInputType.number,
             ),
             TextField(
               controller: subjectController,
-              decoration: InputDecoration(labelText: 'Subject'),
+              decoration: const InputDecoration(labelText: 'Subject'),
             ),
             TextField(
               controller: gradeController,
-              decoration: InputDecoration(labelText: 'Grade'),
+              decoration: const InputDecoration(labelText: 'Grade'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 saveChanges();
               },
-              child: Text('Save Changes'),
+              child: const Text('Save Changes'),
             ),
           ],
         ),
@@ -92,7 +92,7 @@ class _EditMarkScreenState extends State<EditMarkScreen> {
 
     // Show snackbar to indicate successful edit
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+      const SnackBar(
         content: Text(
           'Edited successfully',
           style: TextStyle(color: Colors.green),

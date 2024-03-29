@@ -10,6 +10,7 @@ class ThemeProvider with ChangeNotifier {
         brightness: Brightness.light,
         colorScheme: const ColorScheme.light(
           background: Colors.white,
+          // ignore: unnecessary_const
           primary: const Color.fromARGB(255, 13, 197, 214),
         ),
       );

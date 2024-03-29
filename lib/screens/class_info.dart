@@ -251,7 +251,7 @@ class _ClassInfoState extends State<ClassInfo> {
             // Use Google Fonts for Cinzel font
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Color.fromARGB(255, 75, 75, 75),
+            color: const Color.fromARGB(255, 75, 75, 75),
           ),
         ),
         centerTitle: true,
