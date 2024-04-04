@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:project_1/screens/editmark_screen.dart';
-import 'package:project_1/screens/mark_addingScreen.dart';
-
 import 'package:hive/hive.dart';
 import 'package:project_1/database/db.model.dart';
+import 'package:project_1/database/student_db.dart';
+import 'package:project_1/screens/editmark_screen.dart';
+import 'package:project_1/screens/mark_addingScreen.dart';
 
 class MarkScreen extends StatefulWidget {
   const MarkScreen({Key? key}) : super(key: key);
@@ -15,6 +15,7 @@ class MarkScreen extends StatefulWidget {
 class _MarkScreenState extends State<MarkScreen> {
   List<MarkModel> marks = []; // List to store marks fetched from Hive
   Map<int, bool> isExpanded = {}; // Map to track expansion state
+  Set<String> uniqueExamNames = Set(); // Set to track unique exam names
 
   @override
   void initState() {
@@ -31,6 +32,7 @@ class _MarkScreenState extends State<MarkScreen> {
         key: (mark) => marks.indexOf(mark),
         value: (_) => false,
       );
+      uniqueExamNames = marks.map((mark) => mark.exam ?? '').toSet();
     });
   }
 
@@ -47,6 +49,7 @@ class _MarkScreenState extends State<MarkScreen> {
       setState(() {
         marks.add(newMark);
         isExpanded[marks.indexOf(newMark)] = false;
+        uniqueExamNames.add(newMark.exam ?? '');
       });
     }
   }
@@ -58,6 +61,7 @@ class _MarkScreenState extends State<MarkScreen> {
   }
 
   Future<void> deleteMark(int index) async {
+    final markToDelete = marks[index];
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -72,14 +76,14 @@ class _MarkScreenState extends State<MarkScreen> {
               child: Text('Cancel'),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 final markBox = Hive.box<MarkModel>('mark');
-                final markToDelete = marks[index];
-                markBox.delete(markToDelete.id);
+                await markBox.delete(markToDelete.id);
 
                 setState(() {
                   marks.removeAt(index);
                   isExpanded.remove(index);
+                  uniqueExamNames.remove(markToDelete.exam ?? '');
                 });
 
                 Navigator.of(context).pop(); // Close the alert dialog
@@ -136,6 +140,19 @@ class _MarkScreenState extends State<MarkScreen> {
     );
   }
 
+  void navigateToMarks(String examName) {
+    final marksForExam = marks.where((mark) => mark.exam == examName).toList();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MarksForExamScreen(
+          examName: examName,
+          marksForExam: marksForExam,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -153,44 +170,21 @@ class _MarkScreenState extends State<MarkScreen> {
       ),
       backgroundColor: Color.fromARGB(255, 255, 255, 255),
       body: ListView.builder(
-        itemCount: marks.length,
+        itemCount: uniqueExamNames.length,
         itemBuilder: (context, index) {
-          final mark = marks[index];
+          final examName = uniqueExamNames.elementAt(index);
           return GestureDetector(
-            onTap: () => toggleExpansion(index),
-            onLongPress: () => showLongPressMenu(context, index),
-            child: Card(
+            onTap: () => navigateToMarks(examName),
+            child: Container(
               margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              child: Padding(
-                padding: EdgeInsets.all(8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Student Name: ${mark.studentName}',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        // Remove the IconButton for delete here
-                      ],
-                    ),
-                    Text('Exam: ${mark.exam}'),
-                    if (isExpanded[index] ?? false)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Subject: ${mark.subject}'),
-                          Text('Exam Type: ${mark.examType}'),
-                          Text('Total Marks: ${mark.totalMarks}'),
-                          Text('Obtained Marks: ${mark.obtainedMarks}'),
-                          Text('Grade: ${mark.grade}'),
-                        ],
-                      ),
-                  ],
-                ),
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                examName,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
           );
@@ -202,6 +196,222 @@ class _MarkScreenState extends State<MarkScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: SizedBox(height: 65), // Adjust the FAB position up
+    );
+  }
+}
+
+class MarksForExamScreen extends StatelessWidget {
+  final String examName;
+  final List<MarkModel> marksForExam;
+
+  const MarksForExamScreen({
+    Key? key,
+    required this.examName,
+    required this.marksForExam,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Marks for $examName'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Center(
+                child: Text(
+                  examName,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            Expanded(
+              child: ListView.builder(
+                itemCount: marksForExam.length,
+                itemBuilder: (context, index) {
+                  final mark = marksForExam[index];
+                  final totalMarks = mark.totalMarks ?? 0;
+                  final obtainedMarks = mark.obtainedMarks ?? 0;
+                  final grade = calculateGrade(obtainedMarks, totalMarks);
+
+                  return GestureDetector(
+                    onLongPress: () => _showPopupMenu(context, mark),
+                    child: Container(
+                      margin: EdgeInsets.symmetric(vertical: 8),
+                      padding: EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 1,
+                            blurRadius: 2,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Student Name: ${mark.studentName ?? ''}',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text('Subject: ${mark.subject ?? ''}'),
+                          SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Total Marks: $totalMarks'),
+                              Text('Obtained Marks: $obtainedMarks'),
+                            ],
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Grade: $grade',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: getGradeColor(grade),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String calculateGrade(int obtainedMarks, int totalMarks) {
+    final percentage = (obtainedMarks / totalMarks) * 100;
+    if (percentage >= 90) {
+      return 'A+';
+    } else if (percentage >= 80) {
+      return 'A';
+    } else if (percentage >= 70) {
+      return 'B';
+    } else if (percentage >= 60) {
+      return 'C';
+    } else if (percentage >= 50) {
+      return 'D';
+    } else {
+      return 'F';
+    }
+  }
+
+  Color getGradeColor(String grade) {
+    switch (grade) {
+      case 'A+':
+        return Colors.green;
+      case 'A':
+        return Colors.green;
+      case 'B':
+        return Colors.orange;
+      case 'C':
+        return Colors.yellow;
+      case 'D':
+        return Colors.red;
+      default:
+        return Colors.red;
+    }
+  }
+
+  void _showPopupMenu(BuildContext context, MarkModel mark) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: const Text('Edit'),
+              onTap: () {
+                Navigator.of(context).pop();
+                _editMark(context, mark);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete),
+              title: const Text('Delete'),
+              onTap: () {
+                Navigator.of(context).pop();
+                _deleteMark(context, mark);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _editMark(BuildContext context, MarkModel mark) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EditMarkScreen(mark)),
+    ).then((editedMark) {
+      if (editedMark != null) {
+        // Update the edited mark in the database or wherever it's stored
+        // For example:
+        // markDatabase.updateMark(editedMark);
+      }
+    });
+  }
+
+  void _deleteMark(BuildContext context, MarkModel mark) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Delete'),
+          content: const Text('Are you sure you want to delete this mark?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                // Delete the mark if id is not null
+                if (mark.id != null) {
+                  await deleteMark(mark.id!);
+
+                  // Update UI by removing the mark from marksForExam list
+                  marksForExam.remove(mark);
+                }
+
+                Navigator.of(context).pop(); // Close the alert dialog
+              },
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

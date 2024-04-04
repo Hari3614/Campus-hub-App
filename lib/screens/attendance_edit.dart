@@ -6,9 +6,10 @@ import 'package:project_1/database/student_db.dart';
 class EditAttendancePage extends StatefulWidget {
   final DateTime selectedDay;
 
-  const EditAttendancePage(this.selectedDay);
+  const EditAttendancePage(this.selectedDay, {super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _EditAttendancePageState createState() => _EditAttendancePageState();
 }
 
@@ -47,7 +48,7 @@ class _EditAttendancePageState extends State<EditAttendancePage> {
         builder: (context, setState) {
           return AlertDialog(
             title: const Text('All Students'),
-            content: Container(
+            content: SizedBox(
               width: double.maxFinite,
               height: 300,
               child: ListView.builder(

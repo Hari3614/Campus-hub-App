@@ -4,14 +4,17 @@ import 'package:project_1/database/student_db.dart';
 import 'package:project_1/screens/lesson_screen.dart';
 
 class AddLessonScreen extends StatefulWidget {
+  const AddLessonScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _AddLessonScreenState createState() => _AddLessonScreenState();
 }
 
 class _AddLessonScreenState extends State<AddLessonScreen> {
-  TextEditingController _subjectController = TextEditingController();
-  TextEditingController _titleController = TextEditingController();
-  TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _subjectController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
   void _saveLesson() async {
     // Retrieve entered values
@@ -37,8 +40,9 @@ class _AddLessonScreenState extends State<AddLessonScreen> {
 
     // Navigate back to LessonScreen
     Navigator.pushReplacement(
+      // ignore: use_build_context_synchronously
       context,
-      MaterialPageRoute(builder: (context) => LessonScreen()),
+      MaterialPageRoute(builder: (context) => const LessonScreen()),
     );
   }
 
@@ -47,7 +51,7 @@ class _AddLessonScreenState extends State<AddLessonScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.teal,
-        title: Text('Add Lesson', style: TextStyle(color: Colors.white)),
+        title: const Text('Add Lesson', style: TextStyle(color: Colors.white)),
         centerTitle: true,
       ),
       body: GestureDetector(
@@ -62,58 +66,58 @@ class _AddLessonScreenState extends State<AddLessonScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 16.0),
-                Text(
+                const Text(
                   'Subject',
                   style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
                 TextField(
                   controller: _subjectController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Enter subject',
                     border: OutlineInputBorder(),
                   ),
                 ),
-                SizedBox(height: 24.0),
-                Text(
+                const SizedBox(height: 24.0),
+                const Text(
                   'Lesson Title',
                   style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
                 TextField(
                   controller: _titleController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Enter title',
                     border: OutlineInputBorder(),
                   ),
                 ),
-                SizedBox(height: 24.0),
-                Text(
+                const SizedBox(height: 24.0),
+                const Text(
                   'Description',
                   style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
                 TextField(
                   controller: _descriptionController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Enter description',
                     border: OutlineInputBorder(),
                     alignLabelWithHint: true,
                   ),
                   maxLines: 3,
                 ),
-                SizedBox(height: 24.0),
+                const SizedBox(height: 24.0),
                 Center(
                   child: ElevatedButton(
                     onPressed: _saveLesson,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.teal,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 16),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8)),
                     ),
-                    child: Text(
+                    child: const Text(
                       'Save',
                       style: TextStyle(
                         fontSize: 16.0,
@@ -122,7 +126,7 @@ class _AddLessonScreenState extends State<AddLessonScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
               ],
             ),
           ),

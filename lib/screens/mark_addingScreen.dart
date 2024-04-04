@@ -25,17 +25,16 @@ class _AddMarkScreenState extends State<AddMarkScreen> {
     'Others'
   ];
 
-  String selectedExam = 'Annual Exam'; // Default selected exam
+  String selectedExam = 'Annual Exam';
 
   List<String> examTypeOptions = ['Theory', 'Practical'];
-  String selectedExamType = 'Theory'; // Default selected exam type
+  String selectedExamType = 'Theory';
 
   List<String> gradeOptions = ['A', 'B', 'C', 'D', 'E'];
-  String selectedGrade = 'A'; // Default selected grade
+  String selectedGrade = 'A';
 
-  List<String> studentNames = []; // List to store student names
-
-  String? selectedStudentName; // Default selected student name
+  List<String> studentNames = [];
+  String? selectedStudentName;
 
   @override
   void initState() {
@@ -49,8 +48,7 @@ class _AddMarkScreenState extends State<AddMarkScreen> {
     setState(() {
       studentNames = students.map((student) => student.firstName).toList();
       if (studentNames.isNotEmpty) {
-        selectedStudentName =
-            studentNames[0]; // Set default selected student name
+        selectedStudentName = studentNames[0];
       }
     });
   }
@@ -59,7 +57,7 @@ class _AddMarkScreenState extends State<AddMarkScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 1, 255, 213),
+        backgroundColor: const Color.fromARGB(255, 1, 255, 213),
         title: const Text(
           'Add Marks',
           style: TextStyle(
@@ -72,7 +70,7 @@ class _AddMarkScreenState extends State<AddMarkScreen> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        physics: ClampingScrollPhysics(),
+        physics: const ClampingScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -207,7 +205,7 @@ class _AddMarkScreenState extends State<AddMarkScreen> {
 
                   // Show snackbar to indicate successful addition
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
+                    const SnackBar(
                       content: Text(
                         'Marks added successfully',
                         style: TextStyle(color: Colors.green),
@@ -217,7 +215,7 @@ class _AddMarkScreenState extends State<AddMarkScreen> {
 
                   await Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => MarkScreen()),
+                    MaterialPageRoute(builder: (context) => const MarkScreen()),
                   );
                 }
               },
