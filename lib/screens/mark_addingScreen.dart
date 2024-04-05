@@ -36,6 +36,8 @@ class _AddMarkScreenState extends State<AddMarkScreen> {
   List<String> studentNames = [];
   String? selectedStudentName;
 
+  get marks => null;
+
   @override
   void initState() {
     super.initState();
@@ -51,6 +53,31 @@ class _AddMarkScreenState extends State<AddMarkScreen> {
         selectedStudentName = studentNames[0];
       }
     });
+  }
+
+  Future<void> addMark(MarkModel mark) async {
+    final markBox = await Hive.openBox<MarkModel>('mark');
+    markBox.add(mark);
+
+    // Clear text fields after saving
+    subjectController.clear();
+    totalMarkController.clear();
+    obtainedMarkController.clear();
+
+    // Update the UI to reflect the new mark
+    setState(() {
+      // Assuming marks is a List<MarkModel> variable in your state
+      marks.add(mark);
+    });
+  }
+
+  @override
+  void dispose() {
+    // Dispose text controllers when the widget is disposed
+    subjectController.dispose();
+    totalMarkController.dispose();
+    obtainedMarkController.dispose();
+    super.dispose();
   }
 
   @override
@@ -213,10 +240,7 @@ class _AddMarkScreenState extends State<AddMarkScreen> {
                     ),
                   );
 
-                  await Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const MarkScreen()),
-                  );
+                  // Don't navigate away
                 }
               },
               child: Text('Save Marks'),

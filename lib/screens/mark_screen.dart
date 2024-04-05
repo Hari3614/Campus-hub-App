@@ -46,11 +46,8 @@ class _MarkScreenState extends State<MarkScreen> {
       final markBox = Hive.box<MarkModel>('mark');
       markBox.add(newMark);
 
-      setState(() {
-        marks.add(newMark);
-        isExpanded[marks.indexOf(newMark)] = false;
-        uniqueExamNames.add(newMark.exam ?? '');
-      });
+      // Call fetchMarks again to update the marks list with the latest data
+      await fetchMarks();
     }
   }
 
@@ -153,12 +150,17 @@ class _MarkScreenState extends State<MarkScreen> {
     );
   }
 
+  void sortMarks() {
+    marks.sort((a, b) => a.subject!.compareTo(b.subject!));
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 1, 255, 213),
-        title: Text(
+        backgroundColor: const Color.fromARGB(255, 1, 255, 213),
+        title: const Text(
           'Exam Marks',
           style: TextStyle(
             fontSize: 22,
@@ -168,7 +170,7 @@ class _MarkScreenState extends State<MarkScreen> {
         ),
         centerTitle: true,
       ),
-      backgroundColor: Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: ListView.builder(
         itemCount: uniqueExamNames.length,
         itemBuilder: (context, index) {
@@ -176,15 +178,30 @@ class _MarkScreenState extends State<MarkScreen> {
           return GestureDetector(
             onTap: () => navigateToMarks(examName),
             child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              padding: EdgeInsets.all(8),
+              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 1,
+                    blurRadius: 2,
+                    offset: Offset(0, 2),
+                  ),
+                ],
               ),
-              child: Text(
-                examName,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    examName,
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Icon(Icons.arrow_forward_ios),
+                ],
               ),
             ),
           );
@@ -192,15 +209,17 @@ class _MarkScreenState extends State<MarkScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: addMarkAndUpdateList,
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      bottomNavigationBar: SizedBox(height: 65), // Adjust the FAB position up
+      bottomNavigationBar: const SizedBox(height: 65),
     );
   }
 }
 
-class MarksForExamScreen extends StatelessWidget {
+//<<<<<<<.............For Mark Info............>>>>>>>
+
+class MarksForExamScreen extends StatefulWidget {
   final String examName;
   final List<MarkModel> marksForExam;
 
@@ -211,10 +230,82 @@ class MarksForExamScreen extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
+  _MarksForExamScreenState createState() => _MarksForExamScreenState();
+}
+
+class _MarksForExamScreenState extends State<MarksForExamScreen> {
+  List<MarkModel> filteredMarks = [];
+
+  @override
+  void initState() {
+    super.initState();
+    filterMarks('Pass'); // Initialize with 'Pass' as default filter
+  }
+
+  void filterMarks(String filterBy) {
+    setState(() {
+      if (filterBy == 'Pass') {
+        filteredMarks = widget.marksForExam
+            .where((mark) => mark.obtainedMarks! >= 50)
+            .toList();
+      } else if (filterBy == 'Failed') {
+        filteredMarks = widget.marksForExam
+            .where((mark) => mark.obtainedMarks! < 50)
+            .toList();
+      } else {
+        filteredMarks = List.from(widget.marksForExam); // No filtering
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Marks for $examName'),
+        title: Text('Marks Info'),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Sort Options'),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ListTile(
+                          title: Text('Failed'),
+                          onTap: () {
+                            filterMarks('Failed');
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        ListTile(
+                          title: Text('Pass'),
+                          onTap: () {
+                            filterMarks('Pass');
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        ListTile(
+                          title: Text('All'),
+                          onTap: () {
+                            filterMarks('');
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+            icon: Icon(Icons.sort),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -229,7 +320,7 @@ class MarksForExamScreen extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  examName,
+                  widget.examName,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -241,9 +332,9 @@ class MarksForExamScreen extends StatelessWidget {
             SizedBox(height: 20),
             Expanded(
               child: ListView.builder(
-                itemCount: marksForExam.length,
+                itemCount: filteredMarks.length,
                 itemBuilder: (context, index) {
-                  final mark = marksForExam[index];
+                  final mark = filteredMarks[index];
                   final totalMarks = mark.totalMarks ?? 0;
                   final obtainedMarks = mark.obtainedMarks ?? 0;
                   final grade = calculateGrade(obtainedMarks, totalMarks);
@@ -282,7 +373,16 @@ class MarksForExamScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text('Total Marks: $totalMarks'),
-                              Text('Obtained Marks: $obtainedMarks'),
+                              Text(
+                                'Obtained Marks: $obtainedMarks',
+                                style: TextStyle(
+                                  color: obtainedMarks >= 50
+                                      ? Colors.green
+                                      : Colors
+                                          .red, // Change color based on condition
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ],
                           ),
                           SizedBox(height: 8),
@@ -347,16 +447,16 @@ class MarksForExamScreen extends StatelessWidget {
         return Wrap(
           children: [
             ListTile(
-              leading: const Icon(Icons.edit),
-              title: const Text('Edit'),
+              leading: Icon(Icons.edit),
+              title: Text('Edit'),
               onTap: () {
                 Navigator.of(context).pop();
                 _editMark(context, mark);
               },
             ),
             ListTile(
-              leading: const Icon(Icons.delete),
-              title: const Text('Delete'),
+              leading: Icon(Icons.delete),
+              title: Text('Delete'),
               onTap: () {
                 Navigator.of(context).pop();
                 _deleteMark(context, mark);
@@ -386,8 +486,8 @@ class MarksForExamScreen extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Confirm Delete'),
-          content: const Text('Are you sure you want to delete this mark?'),
+          title: Text('Confirm Delete'),
+          content: Text('Are you sure you want to delete this mark?'),
           actions: [
             TextButton(
               onPressed: () {
@@ -399,10 +499,14 @@ class MarksForExamScreen extends StatelessWidget {
               onPressed: () async {
                 // Delete the mark if id is not null
                 if (mark.id != null) {
-                  await deleteMark(mark.id!);
+                  // await deleteMark(mark.id!);
 
                   // Update UI by removing the mark from marksForExam list
-                  marksForExam.remove(mark);
+                  // marksForExam.remove(mark);
+                  // Update the filtered list instead
+                  setState(() {
+                    filteredMarks.remove(mark);
+                  });
                 }
 
                 Navigator.of(context).pop(); // Close the alert dialog
