@@ -4,7 +4,7 @@ import 'package:project_1/database/db.model.dart';
 class EditMarkScreen extends StatefulWidget {
   final MarkModel markToEdit;
 
-  const EditMarkScreen(this.markToEdit);
+  const EditMarkScreen(this.markToEdit, {required MarkModel mark});
 
   @override
   _EditMarkScreenState createState() => _EditMarkScreenState();

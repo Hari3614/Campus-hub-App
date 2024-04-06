@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:project_1/screens/login_screen.dart';
 import 'package:project_1/screens/classedit_screen.dart';
 import 'package:project_1/screens/class_info.dart';
@@ -12,7 +14,6 @@ class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _HomeState createState() => _HomeState();
 }
 
@@ -21,7 +22,12 @@ class _HomeState extends State<Home> {
   final TextEditingController _searchController = TextEditingController();
 
   late Box _classBox;
+  late Box _userBox;
   bool _isBoxInitialized = false;
+  bool _isUserBoxInitialized = false;
+
+  final ImagePicker _picker = ImagePicker();
+  File? _imageFile;
 
   @override
   void initState() {
@@ -34,14 +40,24 @@ class _HomeState extends State<Home> {
         await path_provider.getApplicationDocumentsDirectory();
     await Hive.initFlutter(appDocumentDir.path);
     _classBox = await Hive.openBox('classes');
+    _userBox = await Hive.openBox('user');
     setState(() {
       _isBoxInitialized = true;
+      _isUserBoxInitialized = true;
     });
+
+    // Check if image path is already saved
+    final imagePath = _userBox.get('imagePath', defaultValue: '');
+    if (imagePath.isNotEmpty) {
+      setState(() {
+        _imageFile = File(imagePath);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_isBoxInitialized) {
+    if (!_isBoxInitialized || !_isUserBoxInitialized) {
       return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(),
@@ -59,7 +75,6 @@ class _HomeState extends State<Home> {
           title: Text(
             "Classes",
             style: GoogleFonts.montserrat(
-              // Use Google Fonts for Cinzel font
               fontSize: 22,
               fontWeight: FontWeight.bold,
               color: Color.fromARGB(255, 75, 75, 75),
@@ -86,31 +101,71 @@ class _HomeState extends State<Home> {
                 decoration: const BoxDecoration(
                   color: Color.fromARGB(255, 12, 206, 197),
                 ),
-                child: const Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
                       height: 20,
                     ),
-                    CircleAvatar(
-                      radius: 60,
-                      backgroundColor: Colors.white,
-                      child: Icon(
-                        Icons.account_circle,
-                        color: Color.fromARGB(255, 12, 206, 197),
-                        size: 120,
-                      ),
+                    Stack(
+                      children: [
+                        GestureDetector(
+                          onTap: _pickImage,
+                          child: CircleAvatar(
+                            radius: 60,
+                            backgroundColor: Colors.white,
+                            backgroundImage: _imageFile != null
+                                ? FileImage(_imageFile!)
+                                : null,
+                            child: _imageFile == null
+                                ? Icon(Icons.person,
+                                    size: 120,
+                                    color: Color.fromARGB(255, 12, 206, 197))
+                                : null,
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            padding: EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.blue,
+                            ),
+                            child: GestureDetector(
+                              onTap: _pickImage,
+                              child: Icon(
+                                Icons.edit,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     SizedBox(height: 10),
-                    Text(
-                      'Username',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
+                    _isUserBoxInitialized
+                        ? ValueListenableBuilder(
+                            valueListenable: _userBox.listenable(),
+                            builder: (context, Box box, _) {
+                              final username = _userBox.get('username',
+                                  defaultValue: 'Username');
+                              return GestureDetector(
+                                onTap: _editUsername,
+                                child: Text(
+                                  username,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              );
+                            },
+                          )
+                        : SizedBox.shrink(),
                   ],
                 ),
               ),
@@ -134,7 +189,7 @@ class _HomeState extends State<Home> {
                   ],
                 ),
                 onTap: () {
-                  Navigator.pop(context); // Close the drawer
+                  Navigator.pop(context);
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const Home()),
@@ -162,7 +217,7 @@ class _HomeState extends State<Home> {
                   ],
                 ),
                 onTap: () {
-                  Navigator.pop(context); // Close the drawer
+                  Navigator.pop(context);
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => SettingsPage()),
@@ -189,10 +244,13 @@ class _HomeState extends State<Home> {
                   ],
                 ),
                 onTap: () {
-                  Navigator.pop(context); // Close the drawer
+                  Navigator.pop(context);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => GhraphPage()),
+                    MaterialPageRoute(
+                        builder: (context) => GhraphPage(
+                              marks: [],
+                            )),
                   );
                 },
               ),
@@ -454,7 +512,6 @@ class _HomeState extends State<Home> {
             TextButton(
               onPressed: () {
                 // Reset login status
-                // ignore: no_leading_underscores_for_local_identifiers
                 final Box _boxLogin = Hive.box('login');
                 _boxLogin.put('loginStatus', false);
                 Navigator.pushAndRemoveUntil(
@@ -470,6 +527,45 @@ class _HomeState extends State<Home> {
                 Navigator.of(context).pop();
               },
               child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+      _userBox.put('imagePath', pickedFile.path); // Save image path in Hive
+    }
+  }
+
+  void _editUsername() {
+    TextEditingController usernameController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Edit Username'),
+          content: TextField(
+            controller: usernameController,
+            decoration: InputDecoration(
+              hintText: 'Enter new username',
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                if (usernameController.text.isNotEmpty) {
+                  _userBox.put('username', usernameController.text);
+                  Navigator.of(context).pop();
+                }
+              },
+              child: Text('Save'),
             ),
           ],
         );

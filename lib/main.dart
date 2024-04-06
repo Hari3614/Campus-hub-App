@@ -15,6 +15,7 @@ void main() async {
   Hive.registerAdapter(LessonModelAdapter());
   Hive.registerAdapter(AttendanceModelAdapter());
   Hive.registerAdapter(MarkModelAdapter());
+  Hive.registerAdapter(UserModelAdapter());
 
   runApp(
     ChangeNotifierProvider(

@@ -127,3 +127,21 @@ class MarkModel extends HiveObject {
     required this.grade,
   });
 }
+
+@HiveType(typeId: 5)
+class UserModel extends HiveObject {
+  @HiveField(0)
+  String? id;
+
+  @HiveField(1)
+  String username;
+
+  @HiveField(2)
+  String imageUrl;
+
+  UserModel({
+    required this.id,
+    required this.username,
+    required this.imageUrl,
+  });
+}

@@ -57,86 +57,6 @@ class _MarkScreenState extends State<MarkScreen> {
     });
   }
 
-  Future<void> deleteMark(int index) async {
-    final markToDelete = marks[index];
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Confirm Delete'),
-          content: Text('Are you sure you want to delete this mark?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the alert dialog
-              },
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () async {
-                final markBox = Hive.box<MarkModel>('mark');
-                await markBox.delete(markToDelete.id);
-
-                setState(() {
-                  marks.removeAt(index);
-                  isExpanded.remove(index);
-                  uniqueExamNames.remove(markToDelete.exam ?? '');
-                });
-
-                Navigator.of(context).pop(); // Close the alert dialog
-              },
-              child: Text('Delete'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> editMark(int index) async {
-    final editedMark = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => EditMarkScreen(marks[index])),
-    );
-
-    if (editedMark != null) {
-      final markBox = Hive.box<MarkModel>('mark');
-      markBox.put(editedMark.id, editedMark);
-
-      setState(() {
-        marks[index] = editedMark;
-      });
-    }
-  }
-
-  void showLongPressMenu(BuildContext context, int index) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Wrap(
-          children: [
-            ListTile(
-              leading: Icon(Icons.edit),
-              title: Text('Edit'),
-              onTap: () {
-                Navigator.of(context).pop();
-                editMark(index);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.delete),
-              title: Text('Delete'),
-              onTap: () {
-                Navigator.of(context).pop();
-                deleteMark(index);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   void navigateToMarks(String examName) {
     final marksForExam = marks.where((mark) => mark.exam == examName).toList();
     Navigator.push(
@@ -147,7 +67,9 @@ class _MarkScreenState extends State<MarkScreen> {
           marksForExam: marksForExam,
         ),
       ),
-    );
+    ).then((_) {
+      fetchMarks(); // Refresh marks list after deletion
+    });
   }
 
   void sortMarks() {
@@ -217,8 +139,6 @@ class _MarkScreenState extends State<MarkScreen> {
   }
 }
 
-//<<<<<<<.............For Mark Info............>>>>>>>
-
 class MarksForExamScreen extends StatefulWidget {
   final String examName;
   final List<MarkModel> marksForExam;
@@ -230,7 +150,6 @@ class MarksForExamScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _MarksForExamScreenState createState() => _MarksForExamScreenState();
 }
 
@@ -240,7 +159,7 @@ class _MarksForExamScreenState extends State<MarksForExamScreen> {
   @override
   void initState() {
     super.initState();
-    filterMarks('Pass'); // Initialize with 'Pass' as default filter
+    filterMarks('');
   }
 
   void filterMarks(String filterBy) {
@@ -256,6 +175,17 @@ class _MarksForExamScreenState extends State<MarksForExamScreen> {
       } else {
         filteredMarks = List.from(widget.marksForExam); // No filtering
       }
+    });
+  }
+
+  void deleteMark(int index) async {
+    final markToDelete = filteredMarks[index];
+    final markBox = await Hive.openBox<MarkModel>('mark');
+    await markBox.delete(markToDelete
+        .key); // Assuming `key` is the unique identifier for marks in Hive
+    // Update the UI by removing the deleted mark from the filteredMarks list
+    setState(() {
+      filteredMarks.removeAt(index);
     });
   }
 
@@ -338,9 +268,7 @@ class _MarksForExamScreenState extends State<MarksForExamScreen> {
                   final totalMarks = mark.totalMarks ?? 0;
                   final obtainedMarks = mark.obtainedMarks ?? 0;
                   final grade = calculateGrade(obtainedMarks, totalMarks);
-
                   return GestureDetector(
-                    onLongPress: () => _showPopupMenu(context, mark),
                     child: Container(
                       margin: EdgeInsets.symmetric(vertical: 8),
                       padding: EdgeInsets.all(12),
@@ -359,12 +287,38 @@ class _MarksForExamScreenState extends State<MarksForExamScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Student Name: ${mark.studentName ?? ''}',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Student Name: ${mark.studentName ?? ''}',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  IconButton(
+                                    onPressed: () {},
+                                    icon: Icon(
+                                      Icons.edit_outlined,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      // Call deleteMark function when delete icon is pressed
+                                      deleteMark(index);
+                                    },
+                                    icon: Icon(
+                                      Icons.delete_outline,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                           SizedBox(height: 8),
                           Text('Subject: ${mark.subject ?? ''}'),
@@ -378,8 +332,7 @@ class _MarksForExamScreenState extends State<MarksForExamScreen> {
                                 style: TextStyle(
                                   color: obtainedMarks >= 50
                                       ? Colors.green
-                                      : Colors
-                                          .red, // Change color based on condition
+                                      : Colors.red,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -438,84 +391,5 @@ class _MarksForExamScreenState extends State<MarksForExamScreen> {
       default:
         return Colors.red;
     }
-  }
-
-  void _showPopupMenu(BuildContext context, MarkModel mark) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Wrap(
-          children: [
-            ListTile(
-              leading: Icon(Icons.edit),
-              title: Text('Edit'),
-              onTap: () {
-                Navigator.of(context).pop();
-                _editMark(context, mark);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.delete),
-              title: Text('Delete'),
-              onTap: () {
-                Navigator.of(context).pop();
-                _deleteMark(context, mark);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _editMark(BuildContext context, MarkModel mark) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => EditMarkScreen(mark)),
-    ).then((editedMark) {
-      if (editedMark != null) {
-        // Update the edited mark in the database or wherever it's stored
-        // For example:
-        // markDatabase.updateMark(editedMark);
-      }
-    });
-  }
-
-  void _deleteMark(BuildContext context, MarkModel mark) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Confirm Delete'),
-          content: Text('Are you sure you want to delete this mark?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () async {
-                // Delete the mark if id is not null
-                if (mark.id != null) {
-                  // await deleteMark(mark.id!);
-
-                  // Update UI by removing the mark from marksForExam list
-                  // marksForExam.remove(mark);
-                  // Update the filtered list instead
-                  setState(() {
-                    filteredMarks.remove(mark);
-                  });
-                }
-
-                Navigator.of(context).pop(); // Close the alert dialog
-              },
-              child: Text('Delete'),
-            ),
-          ],
-        );
-      },
-    );
   }
 }

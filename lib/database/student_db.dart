@@ -100,7 +100,18 @@ Future<List<MarkModel>> getMark() async {
 }
 
 Future<void> deleteMark(String key) async {
-  // ignore: non_constant_identifier_names
-  final Markbox = await Hive.openBox<StudentModel>('Mark');
-  Markbox.delete(key);
+  final markBox = await Hive.openBox<MarkModel>('mark');
+  await markBox.delete(
+      key); // Use await to ensure the operation completes before continuing
+  print('Record with key $key deleted from Hive database');
+}
+
+ValueNotifier<List<UserModel>> UserListNotifier = ValueNotifier([]);
+
+Future<void> addUser(UserModel value) async {
+  final markBox = await Hive.openBox<UserModel>('user');
+  String key = DateTime.now().millisecondsSinceEpoch.toString();
+  value.id = key;
+  markBox.put(key, value);
+  print(value);
 }
