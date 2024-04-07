@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:project_1/database/db.model.dart';
-import 'package:project_1/database/student_db.dart';
-import 'package:project_1/screens/mark_screen.dart';
 
 class AddMarkScreen extends StatefulWidget {
   const AddMarkScreen({Key? key}) : super(key: key);

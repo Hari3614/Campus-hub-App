@@ -232,7 +232,7 @@ class AttendanceDetailsPage extends StatelessWidget {
     return Center(
       child: Container(
         constraints: const BoxConstraints(
-          minHeight: 200, // Set a minimum height
+          minHeight: 300, // Set a minimum height
           minWidth: 200,
         ),
         decoration: BoxDecoration(

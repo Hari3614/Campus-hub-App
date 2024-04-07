@@ -115,3 +115,18 @@ Future<void> addUser(UserModel value) async {
   markBox.put(key, value);
   print(value);
 }
+
+ValueNotifier<List<ClassModel>> ClassListNotifier = ValueNotifier([]);
+
+Future<void> addClass(ClassModel value) async {
+  final classBox = await Hive.openBox<ClassModel>('class');
+  String key = DateTime.now().millisecondsSinceEpoch.toString();
+  value.id = key;
+  classBox.put(key, value);
+  print(value);
+}
+
+Future<List<ClassModel>> getclass() async {
+  final classBox = await Hive.openBox<ClassModel>('class');
+  return classBox.values.toList();
+}

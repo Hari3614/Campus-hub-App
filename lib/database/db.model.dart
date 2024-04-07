@@ -145,3 +145,21 @@ class UserModel extends HiveObject {
     required this.imageUrl,
   });
 }
+
+@HiveType(typeId: 6)
+class ClassModel extends HiveObject {
+  @HiveField(0)
+  String? id;
+
+  @HiveField(1)
+  String title;
+
+  @HiveField(2)
+  String division;
+
+  ClassModel({
+    required this.id,
+    required this.title,
+    required this.division,
+  });
+}

@@ -32,6 +32,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   curved_navigation_bar: ^1.0.3
   fl_chart: ^0.66.2
+  flare_flutter: ^3.0.2
   flutter:
     sdk: flutter
   google_fonts: ^6.2.1
@@ -50,6 +51,12 @@ dev_dependencies:
   flutter_lints: ^2.0.0
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: "^0.13.1"
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "asset/images/My app icon.jpeg"
   
 
 # For information on the generic Dart part of this file, see the

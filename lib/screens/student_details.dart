@@ -58,14 +58,14 @@ class StudentDetailsPage extends StatelessWidget {
                   ),
                 ),
               SizedBox(
-                width: 360,
+                width: 330,
                 child: Card(
                   elevation: 8,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(12.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

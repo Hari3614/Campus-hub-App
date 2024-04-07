@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:project_1/database/db.model.dart';
-import 'package:project_1/database/student_db.dart';
-import 'package:project_1/screens/editmark_screen.dart';
 import 'package:project_1/screens/mark_addingScreen.dart';
 
 class MarkScreen extends StatefulWidget {
@@ -13,10 +11,9 @@ class MarkScreen extends StatefulWidget {
 }
 
 class _MarkScreenState extends State<MarkScreen> {
-  List<MarkModel> marks = []; // List to store marks fetched from Hive
-  Map<int, bool> isExpanded = {}; // Map to track expansion state
-  Set<String> uniqueExamNames = Set(); // Set to track unique exam names
-
+  List<MarkModel> marks = [];
+  Map<int, bool> isExpanded = {};
+  Set<String> uniqueExamNames = Set();
   @override
   void initState() {
     super.initState();
@@ -46,7 +43,6 @@ class _MarkScreenState extends State<MarkScreen> {
       final markBox = Hive.box<MarkModel>('mark');
       markBox.add(newMark);
 
-      // Call fetchMarks again to update the marks list with the latest data
       await fetchMarks();
     }
   }
@@ -68,7 +64,7 @@ class _MarkScreenState extends State<MarkScreen> {
         ),
       ),
     ).then((_) {
-      fetchMarks(); // Refresh marks list after deletion
+      fetchMarks();
     });
   }
 
@@ -139,6 +135,8 @@ class _MarkScreenState extends State<MarkScreen> {
   }
 }
 
+//<<<<<<<<<<............... Mark Info Showing Page...............>>>>>>>>>>>>>>>>>
+
 class MarksForExamScreen extends StatefulWidget {
   final String examName;
   final List<MarkModel> marksForExam;
@@ -186,6 +184,16 @@ class _MarksForExamScreenState extends State<MarksForExamScreen> {
     // Update the UI by removing the deleted mark from the filteredMarks list
     setState(() {
       filteredMarks.removeAt(index);
+    });
+  }
+
+  Future<void> fetchMarks() async {
+    // Fetch marks from Hive and update the state
+    final markBox = await Hive.openBox<MarkModel>('mark');
+    setState(() {
+      widget.marksForExam.clear();
+      widget.marksForExam.addAll(markBox.values.toList());
+      filterMarks(''); // Reset filtering after fetching marks
     });
   }
 
@@ -292,7 +300,7 @@ class _MarksForExamScreenState extends State<MarksForExamScreen> {
                             children: [
                               Text(
                                 'Student Name: ${mark.studentName ?? ''}',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -300,15 +308,31 @@ class _MarksForExamScreenState extends State<MarksForExamScreen> {
                               Row(
                                 children: [
                                   IconButton(
-                                    onPressed: () {},
-                                    icon: Icon(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => EditMarkScreen(
+                                            markModel:
+                                                mark, // Pass the mark data to be edited
+                                          ),
+                                        ),
+                                      ).then((result) {
+                                        // Handle the result if needed, e.g., refresh the list
+                                        if (result != null &&
+                                            result is bool &&
+                                            result) {
+                                          fetchMarks(); // Refresh marks after editing
+                                        }
+                                      });
+                                    },
+                                    icon: const Icon(
                                       Icons.edit_outlined,
                                       color: Colors.blue,
                                     ),
                                   ),
                                   IconButton(
                                     onPressed: () {
-                                      // Call deleteMark function when delete icon is pressed
                                       deleteMark(index);
                                     },
                                     icon: Icon(
@@ -391,5 +415,88 @@ class _MarksForExamScreenState extends State<MarksForExamScreen> {
       default:
         return Colors.red;
     }
+  }
+}
+
+//<<<<<<<<<<...............Edit The Mark...............>>>>>>>>>>>>>>>>>
+
+class EditMarkScreen extends StatefulWidget {
+  final MarkModel markModel;
+
+  const EditMarkScreen({Key? key, required this.markModel}) : super(key: key);
+
+  @override
+  _EditMarkScreenState createState() => _EditMarkScreenState();
+}
+
+class _EditMarkScreenState extends State<EditMarkScreen> {
+  TextEditingController _subjectController = TextEditingController();
+  TextEditingController _totalMarksController = TextEditingController();
+  TextEditingController _obtainedMarksController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _subjectController.text = widget.markModel.subject ?? '';
+    _totalMarksController.text = widget.markModel.totalMarks.toString();
+    _obtainedMarksController.text = widget.markModel.obtainedMarks.toString();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Edit Mark'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              controller: _subjectController,
+              decoration: InputDecoration(labelText: 'Subject'),
+            ),
+            SizedBox(height: 10),
+            TextField(
+              controller: _totalMarksController,
+              decoration: InputDecoration(labelText: 'Total Marks'),
+              keyboardType: TextInputType.number,
+            ),
+            SizedBox(height: 10),
+            TextField(
+              controller: _obtainedMarksController,
+              decoration: InputDecoration(labelText: 'Obtained Marks'),
+              keyboardType: TextInputType.number,
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () async {
+                if (_subjectController.text.isNotEmpty &&
+                    _totalMarksController.text.isNotEmpty &&
+                    _obtainedMarksController.text.isNotEmpty) {
+                  widget.markModel.subject = _subjectController.text;
+                  widget.markModel.totalMarks =
+                      int.parse(_totalMarksController.text);
+                  widget.markModel.obtainedMarks =
+                      int.parse(_obtainedMarksController.text);
+
+                  final markBox = await Hive.openBox<MarkModel>('mark');
+                  markBox.put(widget.markModel.key, widget.markModel);
+
+                  Navigator.pop(context, true);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text('Please fill in all fields.'),
+                  ));
+                }
+              },
+              child: Text('Save'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

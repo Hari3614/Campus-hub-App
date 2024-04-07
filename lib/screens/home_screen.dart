@@ -7,19 +7,18 @@ import 'package:project_1/screens/login_screen.dart';
 import 'package:project_1/screens/classedit_screen.dart';
 import 'package:project_1/screens/class_info.dart';
 import 'package:project_1/screens/settings_screen.dart';
-import 'package:project_1/screens/graphscreen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final TextEditingController _searchController = TextEditingController();
 
   late Box _classBox;
   late Box _userBox;
@@ -77,7 +76,7 @@ class _HomeState extends State<Home> {
             style: GoogleFonts.montserrat(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: Color.fromARGB(255, 75, 75, 75),
+              color: const Color.fromARGB(255, 75, 75, 75),
             ),
           ),
           elevation: 0,
@@ -105,7 +104,7 @@ class _HomeState extends State<Home> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     Stack(
@@ -119,7 +118,7 @@ class _HomeState extends State<Home> {
                                 ? FileImage(_imageFile!)
                                 : null,
                             child: _imageFile == null
-                                ? Icon(Icons.person,
+                                ? const Icon(Icons.person,
                                     size: 120,
                                     color: Color.fromARGB(255, 12, 206, 197))
                                 : null,
@@ -129,14 +128,14 @@ class _HomeState extends State<Home> {
                           bottom: 0,
                           right: 0,
                           child: Container(
-                            padding: EdgeInsets.all(4),
-                            decoration: BoxDecoration(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
                               shape: BoxShape.circle,
                               color: Colors.blue,
                             ),
                             child: GestureDetector(
                               onTap: _pickImage,
-                              child: Icon(
+                              child: const Icon(
                                 Icons.edit,
                                 color: Colors.white,
                               ),
@@ -145,7 +144,7 @@ class _HomeState extends State<Home> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     _isUserBoxInitialized
                         ? ValueListenableBuilder(
                             valueListenable: _userBox.listenable(),
@@ -156,7 +155,7 @@ class _HomeState extends State<Home> {
                                 onTap: _editUsername,
                                 child: Text(
                                   username,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
@@ -165,7 +164,7 @@ class _HomeState extends State<Home> {
                               );
                             },
                           )
-                        : SizedBox.shrink(),
+                        : const SizedBox.shrink(),
                   ],
                 ),
               ),
@@ -220,37 +219,8 @@ class _HomeState extends State<Home> {
                   Navigator.pop(context);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SettingsPage()),
-                  );
-                },
-              ),
-              ListTile(
-                title: const Row(
-                  children: [
-                    Icon(
-                      Icons.show_chart,
-                      size: 25,
-                      color: Color.fromARGB(255, 56, 56, 56),
-                    ),
-                    SizedBox(width: 10),
-                    Text(
-                      'Graph',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Color.fromARGB(255, 69, 69, 69),
-                      ),
-                    ),
-                  ],
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
                     MaterialPageRoute(
-                        builder: (context) => GhraphPage(
-                              marks: [],
-                            )),
+                        builder: (context) => const SettingsPage()),
                   );
                 },
               ),
@@ -297,21 +267,8 @@ class _HomeState extends State<Home> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: 'Search',
-                  prefixIcon: const Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  contentPadding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-                ),
-                onChanged: (value) {},
-              ),
+            const Padding(
+              padding: EdgeInsets.all(10.0),
             ),
             Expanded(
               child: _buildClassCards(),
@@ -550,10 +507,10 @@ class _HomeState extends State<Home> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Edit Username'),
+          title: const Text('Edit Username'),
           content: TextField(
             controller: usernameController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               hintText: 'Enter new username',
             ),
           ),
