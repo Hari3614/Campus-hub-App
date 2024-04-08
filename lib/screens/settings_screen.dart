@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart'; // Add this import for url_launcher
 import 'package:project_1/screens/aboutsceen.dart';
 import 'package:project_1/screens/privacy_policy.dart';
 import 'package:project_1/screens/theme_provider.dart';
@@ -70,14 +71,20 @@ class SettingsPage extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.share),
             title: const Text('Share App'),
-            onTap: () {
-              // Add functionality for sharing the app
+            onTap: () async {
+              const url =
+                  'https://www.amazon.com/dp/B0CZWDZ3VD/ref=apps_sf_sta';
+              if (await canLaunch(url)) {
+                await launch(url);
+              } else {
+                throw 'Could not launch $url';
+              }
             },
           ),
-        ],
-      ),
-    );
-  }
+        ], // Added closing bracket for children list
+      ), // Added closing bracket for body
+    ); // Added closing bracket for Scaffold
+  } // Added closing bracket for build method
 
   void _showAppearanceSettingsDialog(
       BuildContext context, bool isDarkModeEnabled) {
