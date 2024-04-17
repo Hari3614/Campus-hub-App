@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart'; // Add this import for url_launcher
+import 'package:url_launcher/url_launcher.dart';
 import 'package:project_1/screens/aboutsceen.dart';
 import 'package:project_1/screens/privacy_policy.dart';
 import 'package:project_1/screens/theme_provider.dart';
+import 'package:share/share.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -79,12 +80,13 @@ class SettingsPage extends StatelessWidget {
               } else {
                 throw 'Could not launch $url';
               }
+              Share.share(url);
             },
           ),
-        ], // Added closing bracket for children list
-      ), // Added closing bracket for body
-    ); // Added closing bracket for Scaffold
-  } // Added closing bracket for build method
+        ],
+      ),
+    );
+  }
 
   void _showAppearanceSettingsDialog(
       BuildContext context, bool isDarkModeEnabled) {

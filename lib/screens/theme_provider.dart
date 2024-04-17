@@ -23,12 +23,11 @@ class ThemeProvider with ChangeNotifier {
         ),
       );
 
-  bool get isDarkModeEnabled =>
-      _themeData == darkMode; // Check if current theme is dark mode
+  bool get isDarkModeEnabled => _themeData == darkMode;
 
   set themeData(ThemeData themeData) {
     _themeData = themeData;
-    _saveThemePreference(themeData); // Save the theme preference
+    _saveThemePreference(themeData);
     notifyListeners();
   }
 

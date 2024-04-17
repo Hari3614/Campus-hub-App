@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart' as path_provider;
+
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:project_1/screens/login_screen.dart';
 import 'package:project_1/screens/classedit_screen.dart';
@@ -36,9 +36,9 @@ class _HomeState extends State<Home> {
 
   Future<void> _initHive() async {
     final appDocumentDir =
-        await path_provider.getApplicationDocumentsDirectory();
-    await Hive.initFlutter(appDocumentDir.path);
-    _classBox = await Hive.openBox('classes');
+        //    await path_provider.getApplicationDocumentsDirectory();
+        // await Hive.initFlutter(appDocumentDir.path);
+        _classBox = await Hive.openBox('classes');
     _userBox = await Hive.openBox('user');
     setState(() {
       _isBoxInitialized = true;

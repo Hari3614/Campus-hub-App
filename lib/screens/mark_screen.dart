@@ -3,6 +3,8 @@ import 'package:hive/hive.dart';
 import 'package:project_1/database/db.model.dart';
 import 'package:project_1/screens/mark_addingScreen.dart';
 
+//<<<<<<<<<<...............Exam name Showing page...............>>>>>>>>>>
+
 class MarkScreen extends StatefulWidget {
   const MarkScreen({Key? key}) : super(key: key);
 
@@ -118,7 +120,7 @@ class _MarkScreenState extends State<MarkScreen> {
                     style: const TextStyle(
                         fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  Icon(Icons.arrow_forward_ios),
+                  const Icon(Icons.arrow_forward_ios),
                 ],
               ),
             ),
@@ -148,6 +150,7 @@ class MarksForExamScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _MarksForExamScreenState createState() => _MarksForExamScreenState();
 }
 
@@ -171,7 +174,7 @@ class _MarksForExamScreenState extends State<MarksForExamScreen> {
             .where((mark) => mark.obtainedMarks! < 50)
             .toList();
       } else {
-        filteredMarks = List.from(widget.marksForExam); // No filtering
+        filteredMarks = List.from(widget.marksForExam);
       }
     });
   }
@@ -179,208 +182,203 @@ class _MarksForExamScreenState extends State<MarksForExamScreen> {
   void deleteMark(int index) async {
     final markToDelete = filteredMarks[index];
     final markBox = await Hive.openBox<MarkModel>('mark');
-    await markBox.delete(markToDelete
-        .key); // Assuming `key` is the unique identifier for marks in Hive
-    // Update the UI by removing the deleted mark from the filteredMarks list
+    await markBox.delete(markToDelete.key);
     setState(() {
       filteredMarks.removeAt(index);
     });
   }
 
   Future<void> fetchMarks() async {
-    // Fetch marks from Hive and update the state
     final markBox = await Hive.openBox<MarkModel>('mark');
     setState(() {
       widget.marksForExam.clear();
       widget.marksForExam.addAll(markBox.values.toList());
-      filterMarks(''); // Reset filtering after fetching marks
+      filterMarks('');
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Marks Info'),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text('Sort Options'),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ListTile(
-                          title: Text('Failed'),
-                          onTap: () {
-                            filterMarks('Failed');
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        ListTile(
-                          title: Text('Pass'),
-                          onTap: () {
-                            filterMarks('Pass');
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        ListTile(
-                          title: Text('All'),
-                          onTap: () {
-                            filterMarks('');
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              );
-            },
-            icon: Icon(Icons.sort),
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Center(
-                child: Text(
-                  widget.examName,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            Expanded(
-              child: ListView.builder(
-                itemCount: filteredMarks.length,
-                itemBuilder: (context, index) {
-                  final mark = filteredMarks[index];
-                  final totalMarks = mark.totalMarks ?? 0;
-                  final obtainedMarks = mark.obtainedMarks ?? 0;
-                  final grade = calculateGrade(obtainedMarks, totalMarks);
-                  return GestureDetector(
-                    child: Container(
-                      margin: EdgeInsets.symmetric(vertical: 8),
-                      padding: EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 1,
-                            blurRadius: 2,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+        appBar: AppBar(
+          title: const Text('Marks Info'),
+          centerTitle: true,
+          actions: [
+            IconButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Sort Options'),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Student Name: ${mark.studentName ?? ''}',
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  IconButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => EditMarkScreen(
-                                            markModel:
-                                                mark, // Pass the mark data to be edited
-                                          ),
-                                        ),
-                                      ).then((result) {
-                                        // Handle the result if needed, e.g., refresh the list
-                                        if (result != null &&
-                                            result is bool &&
-                                            result) {
-                                          fetchMarks(); // Refresh marks after editing
-                                        }
-                                      });
-                                    },
-                                    icon: const Icon(
-                                      Icons.edit_outlined,
-                                      color: Colors.blue,
-                                    ),
-                                  ),
-                                  IconButton(
-                                    onPressed: () {
-                                      deleteMark(index);
-                                    },
-                                    icon: Icon(
-                                      Icons.delete_outline,
-                                      color: Colors.blue,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                          ListTile(
+                            title: const Text('Failed'),
+                            onTap: () {
+                              filterMarks('Failed');
+                              Navigator.of(context).pop();
+                            },
                           ),
-                          SizedBox(height: 8),
-                          Text('Subject: ${mark.subject ?? ''}'),
-                          SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text('Total Marks: $totalMarks'),
-                              Text(
-                                'Obtained Marks: $obtainedMarks',
-                                style: TextStyle(
-                                  color: obtainedMarks >= 50
-                                      ? Colors.green
-                                      : Colors.red,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
+                          ListTile(
+                            title: const Text('Pass'),
+                            onTap: () {
+                              filterMarks('Pass');
+                              Navigator.of(context).pop();
+                            },
                           ),
-                          SizedBox(height: 8),
-                          Text(
-                            'Grade: $grade',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: getGradeColor(grade),
-                            ),
+                          ListTile(
+                            title: const Text('All'),
+                            onTap: () {
+                              filterMarks('');
+                              Navigator.of(context).pop();
+                            },
                           ),
                         ],
                       ),
-                    ),
-                  );
-                },
-              ),
+                    );
+                  },
+                );
+              },
+              icon: const Icon(Icons.sort),
             ),
           ],
         ),
-      ),
-    );
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Text(
+                    widget.examName,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: filteredMarks.length,
+                  itemBuilder: (context, index) {
+                    final mark = filteredMarks[index];
+                    final totalMarks = mark.totalMarks ?? 0;
+                    final obtainedMarks = mark.obtainedMarks ?? 0;
+                    final grade = calculateGrade(obtainedMarks, totalMarks);
+                    return GestureDetector(
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 1,
+                              blurRadius: 2,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Student Name: ${mark.studentName ?? ''}',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                EditMarkScreen(
+                                              markModel: mark,
+                                            ),
+                                          ),
+                                        ).then((result) {
+                                          if (result != null &&
+                                              result is bool &&
+                                              result) {
+                                            fetchMarks();
+                                          }
+                                        });
+                                      },
+                                      icon: const Icon(
+                                        Icons.edit_outlined,
+                                        color: Colors.blue,
+                                      ),
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        deleteMark(index);
+                                      },
+                                      icon: const Icon(
+                                        Icons.delete_outline,
+                                        color: Colors.blue,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text('Subject: ${mark.subject ?? ''}'),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('Total Marks: $totalMarks'),
+                                Text(
+                                  'Obtained Marks: $obtainedMarks',
+                                  style: TextStyle(
+                                    color: obtainedMarks >= 50
+                                        ? Colors.green
+                                        : Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Grade: $grade',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: getGradeColor(grade),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ));
   }
 
   String calculateGrade(int obtainedMarks, int totalMarks) {
@@ -426,13 +424,15 @@ class EditMarkScreen extends StatefulWidget {
   const EditMarkScreen({Key? key, required this.markModel}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _EditMarkScreenState createState() => _EditMarkScreenState();
 }
 
 class _EditMarkScreenState extends State<EditMarkScreen> {
-  TextEditingController _subjectController = TextEditingController();
-  TextEditingController _totalMarksController = TextEditingController();
-  TextEditingController _obtainedMarksController = TextEditingController();
+  final TextEditingController _subjectController = TextEditingController();
+  final TextEditingController _totalMarksController = TextEditingController();
+  final TextEditingController _obtainedMarksController =
+      TextEditingController();
 
   @override
   void initState() {
@@ -447,7 +447,7 @@ class _EditMarkScreenState extends State<EditMarkScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Mark'),
+        title: const Text('Edit Mark'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -456,21 +456,21 @@ class _EditMarkScreenState extends State<EditMarkScreen> {
           children: [
             TextField(
               controller: _subjectController,
-              decoration: InputDecoration(labelText: 'Subject'),
+              decoration: const InputDecoration(labelText: 'Subject'),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             TextField(
               controller: _totalMarksController,
-              decoration: InputDecoration(labelText: 'Total Marks'),
+              decoration: const InputDecoration(labelText: 'Total Marks'),
               keyboardType: TextInputType.number,
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             TextField(
               controller: _obtainedMarksController,
-              decoration: InputDecoration(labelText: 'Obtained Marks'),
+              decoration: const InputDecoration(labelText: 'Obtained Marks'),
               keyboardType: TextInputType.number,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
                 if (_subjectController.text.isNotEmpty &&
@@ -485,14 +485,15 @@ class _EditMarkScreenState extends State<EditMarkScreen> {
                   final markBox = await Hive.openBox<MarkModel>('mark');
                   markBox.put(widget.markModel.key, widget.markModel);
 
+                  // ignore: use_build_context_synchronously
                   Navigator.pop(context, true);
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     content: Text('Please fill in all fields.'),
                   ));
                 }
               },
-              child: Text('Save'),
+              child: const Text('Save'),
             ),
           ],
         ),
